@@ -1,7 +1,9 @@
-var myGamePiece;
+var squids = [];
 
 function startGame() {
-    myGamePiece = new squid(7, "#006699", 200, 300);
+    for (i = 0; i <5; i++){
+      squids[i] = new squid(Math.round(Math.random()*20), "#006699", Math.round(Math.random()*700), Math.round(Math.random()*700));
+    }
     myGameArea.start();
 }
 
@@ -35,7 +37,9 @@ function squid(size, color, x, y) {
 
 function updateGameArea() {
     myGameArea.clear();
-    myGamePiece.x += Math.round(Math.random()*4)-2;
-    myGamePiece.y += Math.round(Math.random()*4)-2;
-    myGamePiece.update();
+    for (i = 0; i <5; i++){
+      squids[i].x += Math.round(Math.random()*4)-2;
+      squids[i].y += Math.round(Math.random()*4)-2;
+      squids[i].update();
+    }
 }

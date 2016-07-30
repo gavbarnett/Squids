@@ -3,10 +3,10 @@ var foods = [];
 
 function startGame() {
     for (i = 0; i <5; i++){
-      squids[i] = new squid(2+Math.round(Math.random()*20), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700),50+Math.round(Math.random()*100));
+      squids[i] = new squid(2+Math.round(Math.random()*20), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700),50+Math.round(Math.random()*100), 30+Math.random()*100);
     }
     for (i = 0; i <40; i++){
-      foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700));
+      foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700), 3+Math.random()*10);
     }
     myGameArea.start();
 }
@@ -25,12 +25,14 @@ var myGameArea = {
     }
 }
 
-function squid(size, shcolor, x, y, divspeed) {
+function squid(size, shcolor, x, y, divspeed, split) {
     this.size = size;
     this.x = x;
     this.y = y;
     this.shcolor = shcolor;
     this.divspeed = divspeed;
+    this.drain = 0.01*divspeed/50;
+    this.split = split;
     this.update = function(){
         ctx = myGameArea.context;
         ctx.beginPath();
@@ -42,11 +44,13 @@ function squid(size, shcolor, x, y, divspeed) {
     }
 }
 
-function food(size, shcolor, x, y) {
+function food(size, shcolor, x, y, split) {
     this.size = size;
     this.x = x;
     this.y = y;
     this.shcolor = shcolor;
+    this.growth = 0.01*6/split;
+    this.split = split;
     this.update = function(){
         ctx = myGameArea.context;
         ctx.beginPath();
@@ -61,11 +65,10 @@ function food(size, shcolor, x, y) {
 function updateGameArea() {
     myGameArea.clear();
     for (i = squids.length-1; i >=0; i--){
-      //squids[i].size -= 0.01
       hunt(i);
       eat(i);
       spawn(i);
-      squids[i].size -=0.01;
+      squids[i].size -=squids[i].drain;
       if (squids[i].size <2){
         squids.splice(i, 1);
         if (squids.length<=2){
@@ -75,15 +78,15 @@ function updateGameArea() {
       squids[i].update();
     }
     for (i = 1; i < foods.length; i++){
-      foods[i].size += 0.01;
-      if (foods[i].size > 6){
-        foods.push(new food(3, foods[i].shcolor, foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200));
-        foods[i].size =3;
+      foods[i].size += foods[i].growth;
+      if (foods[i].size > foods[i].split){
+        foods.push(new food(foods[i].size/3, foods[i].shcolor, foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200, Math.max(foods[i].split* (0.9+ 0.2*Math.random()),2.9)));
+        foods[i].size /= 3;
       }
       foods[i].update();
     }
     if (foods.length <5){
-      foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700));  
+      foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700), 3+Math.random()*10);
     }
 }
 
@@ -120,13 +123,14 @@ function eat(squid_id) {
 
 function spawn(squid_id) {
 
-  if (squids[squid_id].size > 50){
+  if (squids[squid_id].size > squids[squid_id].split){
     var size = squids[squid_id].size/3;
     var x = squids[squid_id].x-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     var y = squids[squid_id].y-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     squids[squid_id].size /= 3;
     var tempcolor = squids[squid_id].shcolor;
     var divspeed = squids[squid_id].divspeed * (0.9+ 0.2*Math.random());
-    squids[squids.length] = new squid(size, tempcolor, x, y, divspeed);
+    var split = squids[squid_id].split * (0.9+ 0.2*Math.random());
+    squids[squids.length] = new squid(size, tempcolor, x, y, divspeed, split);
   }
 }

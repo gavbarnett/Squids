@@ -138,9 +138,9 @@ function eat(squid_id) {
     if (dist < targetdist) {
       squids[squid_id].size += foods[j].size;
       foods.splice(j,1);
-      j=0;
+    }
+    if (squids[squid_id].size > squids[squid_id].split){
       return;
-      //foods[j] = new food(Math.round(Math.random()*4), "#006666", Math.round(Math.random()*700), Math.round(Math.random()*700));
     }
   }
 }
@@ -153,8 +153,8 @@ function spawn(squid_id) {
     var y = squids[squid_id].y-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     squids[squid_id].size /= 3;
     var tempcolor = colorshaker(squids[squid_id].shcolor);
-    var divspeed = Math.max(squids[squid_id].divspeed * (0.9+ 0.2*Math.random()),20);
-    var split = Math.min(squids[squid_id].split * (0.9+ 0.2*Math.random()), 120);
+    var divspeed = Math.max(squids[squid_id].divspeed * (0.9+ 0.2*Math.random()),50);
+    var split = Math.min(squids[squid_id].split * (0.9+ 0.2*Math.random()), 75);
     squids[squids.length] = new squid(size, tempcolor, x, y, divspeed, split);
   }
 }

@@ -1,6 +1,6 @@
 var squids = [];
 var foods = [];
-
+var msgs = [];
 function startGame() {
     for (i = 0; i <5; i++){
       squids[i] = new squid(2+Math.round(Math.random()*20), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700),50+Math.round(Math.random()*100), 30+Math.random()*100);
@@ -8,6 +8,8 @@ function startGame() {
     for (i = 0; i <40; i++){
       foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700), 3+Math.random()*10);
     }
+    msgs[0] = new msg('hello world', 20, 30);
+    msgs[1] = new msg('hello world', 20, 50);
     myGameArea.start();
 }
 
@@ -62,6 +64,20 @@ function food(size, shcolor, x, y, split) {
     }
 }
 
+function msg(text, x, y){
+  this.text = text;
+  this.color = 'white';
+  this.x = x;
+  this.y = y;
+  this.update = function(){
+    ctx = myGameArea.context;
+    ctx.font = "16px Arial";
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = "left";
+    ctx.fillText(this.text,this.x, this.y);//this.text, this.x, this.y);
+  }
+}
+
 function updateGameArea() {
     myGameArea.clear();
     for (i = squids.length-1; i >=0; i--){
@@ -80,14 +96,22 @@ function updateGameArea() {
     for (i = 1; i < foods.length; i++){
       foods[i].size += foods[i].growth;
       if (foods[i].size > foods[i].split){
-        foods.push(new food(foods[i].size/3, foods[i].shcolor, foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200, Math.max(foods[i].split* (0.9+ 0.2*Math.random()),2.9)));
-        foods[i].size /= 3;
+        foods.push(new food(foods[i].size/3, foods[i].shcolor, foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200, Math.max(foods[i].split* (0.9+ 0.2*Math.random()),2.7)))
+        if (foods[foods.length-1].x<0 ||foods[foods.length-1].x>700 || foods[foods.length-1].y<0 ||foods[foods.length-1].y>700){
+          foods.splice(foods.length-1,1);
+        } else {
+          foods[i].size /= 3;
+        }
       }
       foods[i].update();
     }
-    if (foods.length <5){
+    if (foods.length <20){
       foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700), 3+Math.random()*10);
     }
+    msgs[0].text = 'squids: ' + squids.length;
+    msgs[1].text = 'plants: ' + foods.length;
+    msgs[0].update();
+    msgs[1].update();
 }
 
 function hunt(squid_id) {
@@ -129,8 +153,8 @@ function spawn(squid_id) {
     var y = squids[squid_id].y-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     squids[squid_id].size /= 3;
     var tempcolor = squids[squid_id].shcolor;
-    var divspeed = squids[squid_id].divspeed * (0.9+ 0.2*Math.random());
-    var split = squids[squid_id].split * (0.9+ 0.2*Math.random());
+    var divspeed = Math.max(squids[squid_id].divspeed * (0.9+ 0.2*Math.random()),20);
+    var split = Math.min(squids[squid_id].split * (0.9+ 0.2*Math.random()), 120);
     squids[squids.length] = new squid(size, tempcolor, x, y, divspeed, split);
   }
 }

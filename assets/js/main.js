@@ -96,7 +96,7 @@ function updateGameArea() {
     for (i = 1; i < foods.length; i++){
       foods[i].size += foods[i].growth;
       if (foods[i].size > foods[i].split){
-        foods.push(new food(foods[i].size/3, foods[i].shcolor, foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200, Math.max(foods[i].split* (0.9+ 0.2*Math.random()),2.7)))
+        foods.push(new food(foods[i].size/3, colorshaker(foods[i].shcolor), foods[i].x-100+Math.random()*200, foods[i].y-100+Math.random()*200, Math.max(foods[i].split* (0.9+ 0.2*Math.random()),2.7)))
         if (foods[foods.length-1].x<0 ||foods[foods.length-1].x>700 || foods[foods.length-1].y<0 ||foods[foods.length-1].y>700){
           foods.splice(foods.length-1,1);
         } else {
@@ -152,9 +152,48 @@ function spawn(squid_id) {
     var x = squids[squid_id].x-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     var y = squids[squid_id].y-squids[squid_id].size+Math.random()*squids[squid_id].size*2;
     squids[squid_id].size /= 3;
-    var tempcolor = squids[squid_id].shcolor;
+    var tempcolor = colorshaker(squids[squid_id].shcolor);
     var divspeed = Math.max(squids[squid_id].divspeed * (0.9+ 0.2*Math.random()),20);
     var split = Math.min(squids[squid_id].split * (0.9+ 0.2*Math.random()), 120);
     squids[squids.length] = new squid(size, tempcolor, x, y, divspeed, split);
   }
+}
+
+function colorshaker(color){
+  /*taked in a color and randomly adjusts it*/
+  var p1 = parseInt(color.substring(1,3),16);
+  var p2 = parseInt(color.substring(3,5),16);
+  var p3 = parseInt(color.substring(5,7),16);
+  p1 = p1+(-20+Math.round(40*Math.random()));
+  p2 = p2+(-20+Math.round(40*Math.random()));
+  p3 = p3+(-20+Math.round(40*Math.random()));
+  if (p1 > 255){
+    p1 = 255;
+  } else if (p1 < 0){
+    p1 = 0;
+  }
+  if (p2 > 255){
+    p2 = 255;
+  } else if (p2 < 0){
+    p2 = 0;
+  }
+  if (p3 > 255){
+    p3 = 255;
+  } else if (p3 < 0){
+    p3 = 0;
+  }
+  p1 = p1.toString(16);
+  p2 = p2.toString(16);
+  p3 = p3.toString(16);
+  while (p1.length < 2) {
+        p1 = "0" + p1;
+    }
+    while (p2.length < 2) {
+          p2 = "0" + p2;
+      }
+      while (p3.length < 2) {
+            p3 = "0" + p3;
+        }
+  color = '#'+p1+p2+p3;
+  return color;
 }

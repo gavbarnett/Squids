@@ -3,7 +3,7 @@ var foods = [];
 var msgs = [];
 function startGame() {
     for (i = 0; i <5; i++){
-      squids[i] = new squid(2+Math.round(Math.random()*20), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700),50+Math.round(Math.random()*100), 30+Math.random()*100);
+      squids[i] = new squid(10+Math.round(Math.random()*100), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700),50+Math.round(Math.random()*100), 30+Math.random()*100);
     }
     for (i = 0; i <40; i++){
       foods[i] = new food(2+Math.round(Math.random()*4), '#'+('00000'+(Math.random()*(1<<24)|0).toString(16)).slice(-6), Math.round(Math.random()*700), Math.round(Math.random()*700), 3+Math.random()*10);
@@ -38,7 +38,7 @@ function squid(size, shcolor, x, y, divspeed, split) {
     this.update = function(){
         ctx = myGameArea.context;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, 2*Math.PI, false);
+        ctx.arc(this.x, this.y, Math.pow(this.size, 0.5)/Math.PI, 0, 2*Math.PI, false);
         ctx.fillStyle = this.shcolor;
         ctx.fill();
         ctx.strokeStyle = '#ffffff'
@@ -133,7 +133,7 @@ function eat(squid_id) {
   var dist = 100000;
   var targetdist = 0;
   for (j = foods.length-1; j >=1; j--){
-    targetdist = (squids[squid_id].size + foods[j].size)*0.8;
+    targetdist = (Math.pow(squids[squid_id].size, 0.5)/Math.PI + foods[j].size)*0.8;
     dist = Math.pow(Math.pow((foods[j].x-squids[squid_id].x),2) + Math.pow((foods[j].y-squids[squid_id].y),2),0.5);
     if (dist < targetdist) {
       squids[squid_id].size += foods[j].size;
